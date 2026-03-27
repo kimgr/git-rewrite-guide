@@ -37,6 +37,9 @@ for the mainline branch.
 CLI examples have a prompt with the branch name in parentheses, to make it clear
 which branch they should be executed from, e.g. `(topic)$`
 
+I use long Git options instead of short ones, in order to make it clear what
+each option does, e.g. `--patch --interactive` instead of `-p -i`.
+
 
 ## Basic operations
 
@@ -106,7 +109,7 @@ At this point, you can re-add and -commit whole files, or use **Interactive
 staging** to commit parts of files in any order.
 
 ```
-(topic)$ git rebase -i main
+(topic)$ git rebase --interactive main
 Stopped at f04ef13...  Implement one-two-three
 You can amend the commit now, with
 
@@ -119,19 +122,19 @@ Once you are satisfied with your changes, run
 (topic)$ git reset --soft HEAD^
 
 (topic)$ git add file1.c
-(topic)$ git commit -m "Implement number one"
+(topic)$ git commit --message="Implement number one"
 
 (topic)$ git add file2.c
-(topic)$ git commit -m "Implement number two"
+(topic)$ git commit --message="Implement number two"
 
 (topic)$ git add file3.c
-(topic)$ git commit -c ORIG_HEAD
+(topic)$ git commit --reedit-message=ORIG_HEAD
 
 (topic)$ git rebase --continue
 ```
 
-Note `-c ORIG_HEAD` on the last commit, which can be used to reuse the message
-from the original commit.
+Note `--reedit-message=ORIG_HEAD` on the last commit, which can be used to
+reuse the message from the original commit.
 
 
 ## Techniques
@@ -203,11 +206,11 @@ changes in the working directory. The vanilla `git add` command only allows
 staging and committing individual files separately, so if there are multiple
 unrelated changes to the same file, we need a more fine-grained tool.
 
-Partial staging, `git add -p`, lets you interactively stage by hunk instead of
-by file.
+Partial staging, `git add --patch`, lets you interactively stage by hunk
+instead of by file.
 
-Interactive staging with `git add -i` brings up a whole little text-based user
-interface for managing the index/stage with files or hunks.
+Interactive staging with `git add --interactive` brings up a whole little
+text-based user interface for managing the index/stage with files or hunks.
 
 I honestly find both are quite terrible, and I think it's fair to say this is
 the poster child for graphical Git clients, which are better equipped to provide
@@ -308,12 +311,12 @@ for history cleanup, and keep the original branch around, to make sure you have
 a working starting point if all goes wrong:
 
 ```
-(topic)$ git switch -c topic-rewrite
-(topic-rewrite)$ git rebase -i main
+(topic)$ git switch --create topic-rewrite
+(topic-rewrite)$ git rebase --interactive main
 ...
-(topic-rewrite)$ git rebase -i main
+(topic-rewrite)$ git rebase --interactive main
 ...
-(topic-rewrite)$ git rebase -i main
+(topic-rewrite)$ git rebase --interactive main
 ...
 
 # oh no! we're beyond repair
@@ -334,7 +337,7 @@ If the rewrite branch eventually turns out nicer than the original, you can
 overwrite the original branch using:
 
 ```
-(topic-rewrite)$ git branch -M topic
+(topic-rewrite)$ git branch --move --force topic
 ```
 
 This discards the old `topic` history in favor of the new.
